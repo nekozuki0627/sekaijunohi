@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://nekozuki0627.github.io/sekaijunohi/sitemap.xml
