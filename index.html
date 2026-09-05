@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ja">
+<html lang="ja" class="no-js">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -25,6 +25,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kaisei+Decol:wght@400;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Cinzel:wght@600;700&display=swap">
 <link rel="preload" as="image" href="assets/img/hero.jpg">
 <link rel="stylesheet" href="assets/site.css">
+<script>document.documentElement.classList.remove('no-js');</script>
 
 <script type="application/ld+json">
 {
@@ -77,6 +78,7 @@
     <a href="#contact">お問い合わせ</a>
   </nav>
   <a class="cta" href="event.html">12/5・6 の詳細</a>
+  <span class="prog" id="prog" aria-hidden="true"></span>
 </header>
 <div class="rail" aria-hidden="true"></div>
 <div class="rail r" aria-hidden="true"></div>
@@ -84,6 +86,7 @@
 <div class="top">
   <img class="bg" src="assets/img/hero.jpg" width="1800" height="1005" fetchpriority="high"
        alt="夜。無数のランタンが灯る巨大な世界樹と、そのふもとに広がる色とりどりのテントの市">
+  <div class="embers" id="embers" aria-hidden="true"></div>
   <div class="crestwrap">
     <svg class="crest" viewBox="0 0 66 66" aria-hidden="true">
       <circle cx="33" cy="33" r="30" fill="none" stroke="#D8AF52" stroke-width="1.4"/>
@@ -114,6 +117,9 @@
       <span>入場 <b>無料</b></span>
       <span>予約 <b>不要</b></span>
       <span><b>幼児〜高校生</b>とご家族</span>
+    </div>
+    <div class="countdown" id="cd" data-target="2026-12-05T13:00:00+09:00" data-end="2026-12-06T17:00:00+09:00" hidden>
+      <span class="lb">開催まで</span><span class="n">–</span><span class="u">日</span>
     </div>
     <p style="margin-top:24px;"><a class="btn wide" href="event.html">イベントの詳細を見る</a></p>
     <p class="note" style="margin-top:14px;">冒険者体験のみ 1,500円（各回20名）／ただいま参加者を募集しています。</p>
@@ -187,10 +193,14 @@
       <p class="lead">会場のしつらえは、すべて手づくりです</p>
       <div class="dash"></div>
     </div>
-    <div class="windows">
-      <figure class="win2"><img src="assets/img/photo_worldtree.jpg" width="486" height="720" loading="lazy" decoding="async" alt="会場に立てた手づくりの世界樹のオブジェ"><figcaption>会場に世界樹を立てる</figcaption></figure>
-      <figure class="win2"><img src="assets/img/photo_beast.jpg" width="795" height="900" loading="lazy" decoding="async" alt="手づくりで造形した大きな幻獣"><figcaption>この世界の生きもの</figcaption></figure>
-      <figure class="win2"><img src="assets/img/photo_costume.jpg" width="509" height="900" loading="lazy" decoding="async" alt="草木をあしらった手づくりの衣装と設え"><figcaption>衣装も、設えも手づくり</figcaption></figure>
+    <div class="gal">
+      <div class="gal-track" id="galTrack">
+        <figure class="win2"><img src="assets/img/photo_worldtree.jpg" width="486" height="720" loading="lazy" decoding="async" alt="会場に立てた手づくりの世界樹のオブジェ"><figcaption>会場に世界樹を立てる</figcaption></figure>
+        <figure class="win2"><img src="assets/img/photo_beast.jpg" width="795" height="900" loading="lazy" decoding="async" alt="手づくりで造形した大きな幻獣"><figcaption>この世界の生きもの</figcaption></figure>
+        <figure class="win2"><img src="assets/img/photo_costume.jpg" width="509" height="900" loading="lazy" decoding="async" alt="草木をあしらった手づくりの衣装と設え"><figcaption>衣装も、設えも手づくり</figcaption></figure>
+      </div>
+      <div class="gal-dots" id="galDots" role="tablist" aria-label="写真を選ぶ"></div>
+      <span class="gal-hint">← 横にスワイプできます →</span>
     </div>
   </div>
 </section>

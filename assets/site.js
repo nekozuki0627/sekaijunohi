@@ -135,6 +135,166 @@
     });
   }
 
+  /* =========================================================
+     ここから下は「動き」まわり
+     ========================================================= */
+  var calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- スクロールで浮かび上がる ---------- */
+  (function () {
+    var targets = document.querySelectorAll(
+      '.chead, .notice .panel, .quests > *, .cards > *, .plans > *, .gal, .recs, ' +
+      '.flow, .faq, .seals, .actions, .letter, .engrave, .access, .pad');
+    if (!targets.length) { return; }
+    if (calm || !('IntersectionObserver' in window)) {
+      Array.prototype.forEach.call(targets, function (el) { el.classList.add('in'); });
+      return;
+    }
+    Array.prototype.forEach.call(targets, function (el) { el.classList.add('reveal'); });
+    /* 万一 observer が動かなくても本文が消えたままにならないようにする */
+    setTimeout(function () {
+      Array.prototype.forEach.call(targets, function (el) { el.classList.add('in'); });
+    }, 6000);
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) { return; }
+        var el = e.target;
+        var sibs = el.parentNode ? Array.prototype.indexOf.call(el.parentNode.children, el) : 0;
+        el.style.transitionDelay = Math.min(sibs, 4) * 90 + 'ms';
+        el.classList.add('in');
+        io.unobserve(el);
+      });
+    }, { rootMargin: '0px 0px -12% 0px', threshold: 0.08 });
+    Array.prototype.forEach.call(targets, function (el) { io.observe(el); });
+  })();
+
+  /* ---------- 扉に漂う灯りの粒 ---------- */
+  (function () {
+    var box = document.getElementById('embers');
+    if (!box || calm) { return; }
+    var n = window.innerWidth < 600 ? 10 : 16;
+    var frag = document.createDocumentFragment();
+    for (var i = 0; i < n; i++) {
+      var e = document.createElement('i');
+      var size = 2.5 + Math.random() * 3.5;
+      e.style.setProperty('--s', size.toFixed(1) + 'px');
+      e.style.setProperty('--o', (0.45 + Math.random() * 0.5).toFixed(2));
+      e.style.setProperty('--dx', (Math.random() * 90 - 45).toFixed(0) + 'px');
+      e.style.setProperty('--h', '-' + (200 + Math.random() * 260).toFixed(0) + 'px');
+      e.style.setProperty('--d', (8 + Math.random() * 9).toFixed(1) + 's');
+      e.style.setProperty('--delay', (-Math.random() * 14).toFixed(1) + 's');
+      e.style.left = (Math.random() * 100).toFixed(1) + '%';
+      e.style.bottom = (-10 - Math.random() * 40).toFixed(0) + 'px';
+      frag.appendChild(e);
+    }
+    box.appendChild(frag);
+  })();
+
+  /* ---------- 開催までの日数 ---------- */
+  (function () {
+    var cd = document.getElementById('cd');
+    if (!cd) { return; }
+    var start = new Date(cd.dataset.target).getTime();
+    var end = new Date(cd.dataset.end || cd.dataset.target).getTime();
+    if (isNaN(start)) { return; }
+    var now = Date.now();
+    var nEl = cd.querySelector('.n'), lb = cd.querySelector('.lb'), u = cd.querySelector('.u');
+    if (now > end) { return; }                        /* 終わったら出さない */
+    if (now >= start) {
+      cd.classList.add('today');
+      lb.textContent = 'ただいま';
+      nEl.textContent = '開催中';
+      nEl.style.fontSize = '22px';
+      u.textContent = '';
+    } else {
+      var days = Math.ceil((start - now) / 86400000);
+      lb.textContent = '開催まで';
+      nEl.textContent = days;
+      u.textContent = '日';
+    }
+    cd.hidden = false;
+  })();
+
+  /* ---------- HUD のスクロール進捗 ＋ 現在地 ＋ 扉のパララックス ---------- */
+  (function () {
+    var prog = document.getElementById('prog');
+    var hero = document.querySelector('.top .bg');
+    var links = document.querySelectorAll('.hud nav a[href^="#"]');
+    var wide = window.matchMedia('(min-width: 760px)').matches;
+    var ticking = false;
+
+    function frame() {
+      ticking = false;
+      var doc = document.documentElement;
+      var max = doc.scrollHeight - window.innerHeight;
+      var y = window.scrollY || doc.scrollTop;
+      if (prog) { prog.style.width = (max > 0 ? Math.min(y / max, 1) * 100 : 0) + '%'; }
+      if (hero && wide && !calm && y < 700) { hero.style.transform = 'translate3d(0,' + (y * 0.16).toFixed(1) + 'px,0)'; }
+    }
+    function onScroll() { if (!ticking) { ticking = true; requestAnimationFrame(frame); } }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', function () { wide = window.matchMedia('(min-width: 760px)').matches; onScroll(); }, { passive: true });
+    frame();
+
+    if (links.length && 'IntersectionObserver' in window) {
+      var map = {};
+      Array.prototype.forEach.call(links, function (a) {
+        var sec = document.querySelector(a.getAttribute('href'));
+        if (sec) { map[sec.id] = a; }
+      });
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          var a = map[e.target.id];
+          if (!a) { return; }
+          if (e.isIntersecting) {
+            Array.prototype.forEach.call(links, function (l) { l.removeAttribute('aria-current'); });
+            a.setAttribute('aria-current', 'true');
+          }
+        });
+      }, { rootMargin: '-45% 0px -50% 0px' });
+      Object.keys(map).forEach(function (id) { io.observe(document.getElementById(id)); });
+    }
+  })();
+
+  /* ---------- 世界のかけら：横スワイプの点 ---------- */
+  (function () {
+    var track = document.getElementById('galTrack');
+    var dots = document.getElementById('galDots');
+    if (!track || !dots) { return; }
+    var slides = track.querySelectorAll('.win2');
+    if (slides.length < 2) { return; }
+
+    Array.prototype.forEach.call(slides, function (s, i) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.setAttribute('aria-label', (i + 1) + '枚目を見る');
+      b.addEventListener('click', function () {
+        track.scrollTo({ left: s.offsetLeft - track.offsetLeft - 10, behavior: calm ? 'auto' : 'smooth' });
+      });
+      dots.appendChild(b);
+    });
+
+    var ticking = false;
+    function sync() {
+      ticking = false;
+      var mid = track.scrollLeft + track.clientWidth / 2;
+      var best = 0, bestD = Infinity;
+      Array.prototype.forEach.call(slides, function (s, i) {
+        var c = s.offsetLeft - track.offsetLeft + s.offsetWidth / 2;
+        var d = Math.abs(c - mid);
+        if (d < bestD) { bestD = d; best = i; }
+      });
+      Array.prototype.forEach.call(dots.children, function (b, i) {
+        if (i === best) { b.setAttribute('aria-current', 'true'); }
+        else { b.removeAttribute('aria-current'); }
+      });
+    }
+    track.addEventListener('scroll', function () {
+      if (!ticking) { ticking = true; requestAnimationFrame(sync); }
+    }, { passive: true });
+    sync();
+  })();
+
   /* ---------- FAQ をひとつずつ開く ---------- */
   var faq = document.querySelectorAll('.faq details');
   Array.prototype.forEach.call(faq, function (d) {

@@ -63,7 +63,7 @@ h1,h2,h3,h4{font-family:"Kaisei Decol",serif;font-weight:700;margin:0;line-heigh
 p,li,dd,.ans{text-wrap:pretty;}
 p{margin:0;}
 a{color:inherit;}
-img{display:block;max-width:100%;}
+img{display:block;max-width:100%;height:auto;}
 ul{margin:0;padding:0;list-style:none;}
 
 .wrap{max-width:var(--wrap);margin-left:auto;margin-right:auto;padding-left:18px;padding-right:18px;}
@@ -336,11 +336,33 @@ section{padding:54px 0 8px;position:relative;z-index:1;}
   border-top:1px dashed var(--edge);padding-top:12px;line-height:1.8;}
 
 /* 写真の窓 */
-.windows{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
-@media (max-width:560px){.windows{grid-template-columns:1fr 1fr;}}
+.gal{position:relative;}
+.gal-track{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.gal-dots{display:none;}
 .win2{position:relative;margin:0;border:1px solid #5E4A22;overflow:hidden;
   box-shadow:0 0 0 1px rgba(0,0,0,.5),0 12px 26px rgba(0,0,0,.55);}
-.win2 img{width:100%;aspect-ratio:3/4;object-fit:cover;}
+.win2 img{width:100%;height:auto;aspect-ratio:3/4;object-fit:cover;}
+
+@media (max-width:700px){
+  .gal-track{
+    display:flex;gap:14px;overflow-x:auto;overscroll-behavior-x:contain;
+    scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
+    margin:0 -18px;padding:3px 18px 4px;scrollbar-width:none;
+  }
+  .gal-track::-webkit-scrollbar{display:none;}
+  .gal-track .win2{flex:0 0 78%;scroll-snap-align:center;}
+  .win2 img{aspect-ratio:4/5;}
+  .win2 figcaption{font-size:13px;padding:22px 14px 12px;}
+  .gal-dots{display:flex;justify-content:center;gap:9px;margin-top:16px;}
+  .gal-dots button{
+    width:9px;height:9px;padding:0;border-radius:50%;cursor:pointer;
+    border:1px solid var(--gold-dim);background:transparent;
+    transition:background .2s,transform .2s,border-color .2s;
+  }
+  .gal-dots button[aria-current="true"]{background:var(--gold);border-color:var(--gold);transform:scale(1.35);}
+  .gal-hint{display:block;text-align:center;font-size:11.5px;color:#9C8B6C;margin-top:10px;letter-spacing:.08em;}
+}
+.gal-hint{display:none;}
 .win2::after{content:"";position:absolute;inset:0;pointer-events:none;
   box-shadow:inset 0 0 34px rgba(20,12,4,.7),inset 0 0 0 1px rgba(200,162,74,.42);}
 .win2 figcaption{position:absolute;left:0;right:0;bottom:0;z-index:2;
@@ -460,3 +482,83 @@ footer .cr{font-size:11.5px;color:#8A7B60;margin-top:14px;}
 .orrery .ring-a{transform-origin:50% 50%;animation:spin 180s linear infinite;}
 .orrery .ring-b{transform-origin:50% 50%;animation:spin 112s linear infinite reverse;}
 @media (prefers-reduced-motion:reduce){.orrery .ring-a,.orrery .ring-b{animation:none;}}
+
+/* =========================================================
+   動き（すべて prefers-reduced-motion で止まる）
+   ========================================================= */
+
+/* --- スクロールで浮かび上がる --- */
+.reveal{opacity:0;transform:translateY(22px);}
+@media (prefers-reduced-motion:no-preference){
+  .reveal{transition:opacity .7s cubic-bezier(.22,.7,.3,1),transform .7s cubic-bezier(.22,.7,.3,1);}
+}
+.reveal.in{opacity:1;transform:none;}
+@media (prefers-reduced-motion:reduce){ .reveal{opacity:1;transform:none;} }
+.no-js .reveal{opacity:1;transform:none;}
+
+/* --- HUD のスクロール進捗（金の線） --- */
+.hud .prog{position:absolute;left:0;bottom:0;height:2px;width:0;z-index:2;pointer-events:none;
+  background:linear-gradient(90deg,#8A6C2C,#EFCF8B 60%,#FFF3D6);
+  box-shadow:0 0 10px rgba(239,207,139,.75);}
+
+/* --- 扉に漂う灯りの粒 --- */
+.embers{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden;}
+.embers i{position:absolute;bottom:-14px;width:var(--s,4px);height:var(--s,4px);border-radius:50%;
+  background:radial-gradient(circle at 40% 35%, #FFF3CE 0%, #F0C463 45%, rgba(220,150,50,0) 72%);
+  opacity:0;will-change:transform,opacity;}
+@keyframes drift{
+  0%{opacity:0;transform:translate3d(0,0,0) scale(.7);}
+  12%{opacity:var(--o,.85);}
+  70%{opacity:var(--o,.85);}
+  100%{opacity:0;transform:translate3d(var(--dx,20px),calc(var(--h,-320px)),0) scale(1.15);}
+}
+@media (prefers-reduced-motion:no-preference){
+  .embers i{animation:drift var(--d,11s) linear var(--delay,0s) infinite;}
+}
+
+/* --- 扉のゆるいパララックス --- */
+@media (prefers-reduced-motion:no-preference) and (min-width:760px){
+  .top .bg{will-change:transform;}
+}
+
+/* --- 開催までの日数 --- */
+.countdown{
+  display:inline-flex;align-items:baseline;gap:9px;margin-top:16px;
+  padding:9px 20px 10px;border:1px solid var(--gold-dim);
+  background:linear-gradient(180deg,rgba(60,44,18,.09),rgba(60,44,18,.02));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.5);
+}
+.countdown .lb{font-size:12.5px;letter-spacing:.14em;color:var(--ink-soft);font-weight:700;}
+.countdown .n{font-family:"Cinzel",serif;font-weight:700;font-size:30px;line-height:1;
+  color:var(--ember);font-variant-numeric:tabular-nums;}
+.countdown .u{font-size:13px;font-weight:700;color:var(--ink-soft);}
+.countdown.today .n,.countdown.today .lb{color:var(--forest);}
+.countdown[hidden]{display:none;}
+
+/* --- ボタンに光沢が走る --- */
+.btn{overflow:hidden;}
+.btn::after{content:"";position:absolute;top:0;bottom:0;left:-60%;width:38%;pointer-events:none;
+  background:linear-gradient(100deg,transparent,rgba(255,244,214,.30),transparent);
+  transform:skewX(-18deg);}
+@media (prefers-reduced-motion:no-preference){
+  .btn::after{animation:sheen 5.5s ease-in-out infinite;}
+  .btn:hover::after{animation-duration:1.6s;}
+}
+@keyframes sheen{0%,72%{left:-60%;}92%,100%{left:118%;}}
+
+/* --- 札がすこし浮く（マウスがある画面だけ） --- */
+@media (hover:hover) and (prefers-reduced-motion:no-preference){
+  .quest,.cards .panel,.plan,.win2{transition:transform .28s ease,box-shadow .28s ease;}
+  .quest:hover,.cards .panel:hover,.plan:hover{transform:translateY(-3px);
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.45),inset 0 0 46px rgba(120,82,24,.13),
+      0 0 0 1px rgba(0,0,0,.55),0 22px 46px rgba(0,0,0,.62);}
+  .win2:hover{transform:translateY(-3px);}
+  .win2 img{transition:transform .5s ease;}
+  .win2:hover img{transform:scale(1.05);}
+}
+
+/* --- 章番号がスクロールで光る --- */
+@media (prefers-reduced-motion:no-preference){
+  .chead .rn{transition:box-shadow .4s ease,transform .4s ease;}
+  .chead.in .rn{box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 3px 8px rgba(0,0,0,.6),0 0 22px rgba(239,207,139,.45);}
+}
