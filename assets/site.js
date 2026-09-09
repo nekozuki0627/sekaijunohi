@@ -144,7 +144,7 @@
   (function () {
     var targets = document.querySelectorAll(
       '.chead, .notice .panel, .quests > *, .cards > *, .plans > *, .gal, .recs, ' +
-      '.flow, .faq, .seals, .actions, .letter, .engrave, .access, .pad');
+      '.flow, .faq, .seals, .actions, .letter, .engrave, .access, .pad, .evlist > *');
     if (!targets.length) { return; }
     if (calm || !('IntersectionObserver' in window)) {
       Array.prototype.forEach.call(targets, function (el) { el.classList.add('in'); });
