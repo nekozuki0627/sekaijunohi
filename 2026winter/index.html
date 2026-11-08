@@ -103,6 +103,23 @@
 }
 ]
 </script>
+<style>
+.hud .burger{flex:none;margin-left:8px;width:46px;height:42px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:6px;cursor:pointer;
+  background:linear-gradient(180deg,#F2D48D,#C8A24A 55%,#9A7A2F);border:1px solid #6B5320;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 2px 0 #4E3C16,0 6px 14px rgba(0,0,0,.5);}
+.hud .burger span{display:block;width:22px;height:2.5px;background:#1A1206;border-radius:2px;transition:transform .2s,opacity .2s;}
+.hud .burger[aria-expanded="true"] span:nth-child(1){transform:translateY(8.5px) rotate(45deg);}
+.hud .burger[aria-expanded="true"] span:nth-child(2){opacity:0;}
+.hud .burger[aria-expanded="true"] span:nth-child(3){transform:translateY(-8.5px) rotate(-45deg);}
+@media (max-width:780px){.hud .burger{margin-left:auto;}}
+.hud .hmenu{position:absolute;top:100%;right:10px;min-width:230px;z-index:90;
+  background:linear-gradient(180deg,#2C2114,#160F08);border:1px solid var(--gold-dim);
+  box-shadow:0 14px 30px rgba(0,0,0,.6);padding:6px 0;}
+.hud .hmenu[hidden]{display:none;}
+.hud .hmenu a{display:block;padding:13px 20px;color:#F0E0BA;text-decoration:none;font-size:14.5px;letter-spacing:.06em;border-bottom:1px solid rgba(200,162,74,.18);}
+.hud .hmenu a:last-child{border-bottom:none;}
+.hud .hmenu a:hover,.hud .hmenu a:active{background:rgba(200,162,74,.14);color:#FFF3D6;}
+</style>
 </head>
 <body>
 <a class="skip" href="#main">本文へ進む</a>
@@ -126,7 +143,16 @@
     <a href="#access">アクセス</a>
     <a href="#faq">よくある質問</a>
   </nav>
-  <a class="cta" href="#plans">参加のしかた</a>
+  <button class="burger" id="burger" type="button" aria-label="メニューを開く" aria-expanded="false" aria-controls="hmenu"><span></span><span></span><span></span></button>
+  <div class="hmenu" id="hmenu" hidden>
+    <a href="#flyer">チラシ</a>
+    <a href="#what">その日、何が起こるか</a>
+    <a href="#flow">当日の歩きかた</a>
+    <a href="#plans">参加のしかた</a>
+    <a href="#access">会場とアクセス</a>
+    <a href="#faq">よくある質問</a>
+    <a href="#contact">お問い合わせ</a>
+  </div>
   <span class="prog" id="prog" aria-hidden="true"></span>
 </header>
 <div class="rail" aria-hidden="true"></div>
@@ -522,8 +548,20 @@
 
 <div class="dock">
   <span class="d1"><b>12.5</b>（土）<b>12.6</b>（日）<small>九州電力 大分営業所／入場無料</small></span>
+  <a class="go" href="#plans">参加のしかた</a>
 </div>
 
 <script src="../assets/site.js" defer></script>
+<script>
+(function(){
+  var b=document.getElementById('burger'), m=document.getElementById('hmenu');
+  if(!b||!m) return;
+  function set(o){ m.hidden=!o; b.setAttribute('aria-expanded',o?'true':'false'); b.setAttribute('aria-label',o?'メニューを閉じる':'メニューを開く'); }
+  b.addEventListener('click',function(e){ e.stopPropagation(); set(m.hidden); });
+  m.addEventListener('click',function(e){ if(e.target.closest('a')) set(false); });
+  document.addEventListener('click',function(e){ if(!m.hidden && !m.contains(e.target)) set(false); });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape') set(false); });
+})();
+</script>
 </body>
 </html>
