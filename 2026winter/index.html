@@ -107,13 +107,15 @@
 .hud .burger{flex:none;margin-left:8px;position:relative;width:46px;height:46px;border-radius:50%;padding:0;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;cursor:pointer;
   background:transparent;border:none;box-shadow:none;overflow:visible;-webkit-tap-highlight-color:transparent;
   animation:wispFloat 4.2s ease-in-out infinite;}
-.hud .burger::before{content:"";position:absolute;inset:-12px;z-index:0;pointer-events:none;
+.hud .burger::before{content:"";position:absolute;inset:-4px;z-index:0;pointer-events:none;
   background:url(../assets/img/wisp.png) center/contain no-repeat;
-  filter:drop-shadow(0 0 8px rgba(255,210,130,.55));animation:wispGlow 3.1s ease-in-out infinite;}
-.hud .burger span{position:relative;z-index:1;display:block;width:18px;height:2.5px;background:#3A2408;border-radius:2px;transition:transform .2s,opacity .2s;}
-@keyframes wispFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
-@keyframes wispGlow{0%,100%{transform:scale(1) rotate(0deg);opacity:.92}50%{transform:scale(1.08) rotate(12deg);opacity:1}}
-@media (prefers-reduced-motion:reduce){.hud .burger,.hud .burger::before{animation:none;}}
+  filter:blur(1.2px) saturate(.85);animation:wispGlow 4.4s ease-in-out infinite;}
+.hud .burger span{position:relative;z-index:1;display:block;width:18px;height:2px;background:#F3E2B8;border-radius:2px;box-shadow:0 0 3px rgba(0,0,0,.55);transition:transform .2s,opacity .2s;}
+@keyframes wispFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+@keyframes wispGlow{0%,100%{transform:scale(.96) rotate(0deg);opacity:.32}50%{transform:scale(1.03) rotate(10deg);opacity:.5}}
+.dock a.go{animation:goWiggle 6s ease-in-out 2s infinite;transform-origin:50% 60%;}
+@keyframes goWiggle{0%,82%,100%{transform:rotate(0) scale(1)}85%{transform:rotate(-4deg) scale(1.06)}88%{transform:rotate(4deg) scale(1.06)}91%{transform:rotate(-3deg) scale(1.04)}94%{transform:rotate(2deg) scale(1.02)}97%{transform:rotate(0) scale(1)}}
+@media (prefers-reduced-motion:reduce){.hud .burger,.hud .burger::before,.dock a.go{animation:none;}}
 .hud .burger[aria-expanded="true"] span:nth-child(1){transform:translateY(7.5px) rotate(45deg);}
 .hud .burger[aria-expanded="true"] span:nth-child(2){opacity:0;}
 .hud .burger[aria-expanded="true"] span:nth-child(3){transform:translateY(-7.5px) rotate(-45deg);}
